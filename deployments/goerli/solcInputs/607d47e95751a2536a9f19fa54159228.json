@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/PostFactory.sol": {
+      "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.16;\r\n\r\nerror Post__AlreadyLiked();\r\nerror Post__RewardTransferFailed();\r\n\r\ncontract PostFactory {\r\n    struct Post {\r\n        address author;\r\n        string postTitle;\r\n        string content;\r\n        uint256 createdOn;\r\n        uint rewardEarned;\r\n        address[] likers;\r\n    }\r\n\r\n    uint private postCount;\r\n    mapping(uint => Post) private postMapping;\r\n    mapping(address => mapping(uint => bool)) private likedPosts;\r\n\r\n    event Post__Created(uint indexed postId, address indexed author);\r\n\r\n    constructor() {\r\n        postCount = 0;\r\n    }\r\n\r\n    function createPost(string memory _postTitle, string memory _content) public {\r\n        postMapping[postCount] = Post(\r\n            msg.sender,\r\n            _postTitle,\r\n            _content,\r\n            block.timestamp,\r\n            0,\r\n            new address[](0)\r\n        );\r\n        emit Post__Created(postCount, msg.sender);\r\n        postCount++;\r\n    }\r\n\r\n    function likePost(uint _postId) public {\r\n        Post storage post = postMapping[_postId];\r\n        if (likedPosts[msg.sender][_postId]) {\r\n            revert Post__AlreadyLiked();\r\n        }\r\n        post.likers.push(msg.sender);\r\n        likedPosts[msg.sender][_postId] = true;\r\n    }\r\n\r\n    function rewardPost(uint _postId) external payable {\r\n        Post storage post = postMapping[_postId];\r\n        (bool success, ) = payable(post.author).call{value: msg.value}(\"\");\r\n        if (!success) {\r\n            revert Post__RewardTransferFailed();\r\n        }\r\n        post.rewardEarned = post.rewardEarned + msg.value;\r\n    }\r\n\r\n    function getPostDetails(\r\n        uint _postId\r\n    ) public view returns (address, string memory, string memory, uint256, uint, uint) {\r\n        Post storage post = postMapping[_postId];\r\n        uint likes = post.likers.length;\r\n        return (\r\n            post.author,\r\n            post.postTitle,\r\n            post.content,\r\n            post.createdOn,\r\n            post.rewardEarned,\r\n            likes\r\n        );\r\n    }\r\n\r\n    function getTotalPostCount() public view returns (uint) {\r\n        return postCount;\r\n    }\r\n}\r\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
