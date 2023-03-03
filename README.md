@@ -2,14 +2,14 @@
 
 Hardhat Postfactory is a simple Smart Contract that allows users to post articles on the desired chain and earn rewards in the form of ETH from other users. The Smart Contract is automatically verified when deploying to chains other than development chains.
 
-#####Key features of the Smart Contract include:
+##### Key features of the Smart Contract include:
 
 - Users can post any number of articles.
 - Articles can be liked by other users.
 - Authors of articles can earn rewards in the form of ETH from other users.
 - Emit results
 
-#####Key features of the Hardhat Postfactory
+##### Key features of the Hardhat Postfactory
 - Auto verifies Smartcontact (chains other than devlopement chain and when Etherscan API is present )
 - Uses deploy plugin of hardhat to deploy
 
